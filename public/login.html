@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login Page</title>
+    <link rel="stylesheet" type="text/css" href="loginPage.css">
+
+</head>
+
+<body>
+    <section class="page" id="page">
+        
+        <div class="login-page" id="login-page">
+            <form class="login-form" id="loginform" method="post" onsubmit="loginUser(event)">
+                <h2 class="signin">Login</h2>
+                <label>Email</label>
+                <input type="email" name="email" id="email" placeholder="Enter email" required/>
+                <label>Password</label>
+                <input type="password" name="password" id="password" placeholder="Enter password" required/>
+                <input type="submit" class="submit" value="Sign In" required>
+                <p class="message">Not registered? <a href="#" onclick="toggleForms()">Create an account</a></p>
+    
+                <div class="two-col">
+                    <div class="one">
+                        <input type="checkbox" id="login-check">
+                        <label for="login-check">Remember Me</label>
+                    </div>
+                    <div class="two">
+                        <label><a href="#">Forgot password?</a></label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    
+<!-- Registration form (Initially hidden) -->
+<div class="register-container" id="register" style="display: none;">
+    <form class="register-form" id="registerForm" method="post" onsubmit="addUser(event)">
+        <h2 class="register-text">Register</h2>
+        <label>Name</label>
+        <input type="text" name="name" id="name" placeholder="Enter your Name" required>
+        <label>Email</label>
+        <input type="email" name="email" id="email" placeholder="Enter email address" required/>
+        <label>New Password</label>
+        <input type="password" name="password" id="password" placeholder="Enter password" required/>
+        <label>Re-Enter Password</label>
+        <input type="password" name="reEnterPassword" placeholder="retype password" required/>
+        <input type="submit" class="submit" value="Create" required>
+        <p class="message">Already registered? <a href="#" onclick="toggleForms()">Sign In</a></p>
+        <div class="two-col">
+            <div class="one">
+                <input type="checkbox" id="register-check">
+                <label for="register-check">Remember Me</label>
+            </div>
+            <div class="two">
+                <label><a href="#">Terms & conditions</a></label>
+            </div>
+        </div>
+    </form>
+</div>
+
+    </section>
+    
+    <script>
+        function toggleForms() {
+            var loginPage = document.getElementById("login-page");
+            var registerPage = document.getElementById("register");
+    
+            if (loginPage.style.display === "none") {
+                loginPage.style.display = "block";
+                registerPage.style.display = "none";
+            } else {
+                loginPage.style.display = "none";
+                registerPage.style.display = "block";
+            }
+
+            
+        }
+
+
+        /* -------------------------------------------------------  */
+        document.getElementById("registerForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            // Get form data
+            const formData = new FormData(event.target);
+            const formDataObject = Object.fromEntries(formData.entries());
+
+            // Send registration request to server
+            ///---
+            fetch("/addUser", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formDataObject)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Registration successful
+                    alert("Registration successful");
+                } else {
+                    // Registration failed
+                    alert("Registration failed. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error registering user");
+            });
+        });
+
+        /* --- login ka ---*/
+        
+        function loginUser(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            // Get form data
+            const formData = new FormData(event.target);
+            const formDataObject = Object.fromEntries(formData.entries());
+
+            // Send login request to server
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formDataObject)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Login successful
+                    window.location.href = 'index.html';
+                } else {
+                    // Login failed
+                    alert("Invalid username or password. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error logging in");
+            });
+        }
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
